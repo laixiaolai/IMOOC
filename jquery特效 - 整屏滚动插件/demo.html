@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>整屏滚动特效</title>
+<link rel="stylesheet" type="text/css" href="http://yun.hcoder.net/demos/hc.css">
+<script type="text/javascript" src="http://yun.hcoder.net/demos/jquery.js"></script>
+<style>
+.panel{width:100%;}
+.panel *{color:#FFF;}
+h1{font-size:36px; line-height:2em;}
+p{font-size:18px; line-height:1.8em;}
+.padding_c{padding:150px 0px;}
+.w500{width:600px;}
+</style>
+</head>
+<body>
+    <div class="panel" style="background-color:#F73656;">
+        <div class="w500 padding_c">
+            <h1>Hcoder.net</h1>
+            <p>欢迎使用Hcoder.net问您提供的整屏滚动插件......</p>
+        </div>
+    </div>
+    <div class="panel" style="background-color:#3DCC98;">
+        <div class="w500 padding_c">
+          <h1>Hcoder.net 整屏滚动演示第二页</h1>
+          <p>调用只需一句代码:</p>
+            <p>$(function()<br />
+              {<br />
+hc_scrollify('panel');<br />
+});</p>
+        </div>
+    </div>
+    <div class="panel" style="background-color:#47A3D1;">
+        <div class="w500 padding_c">
+            <h1>Hcoder.net 整屏滚动演示第三页</h1>
+            <p>兼容IE,火狐,谷歌等各类浏览器</p>
+        </div>
+    </div>
+</body>
+<script src="hc_scrollify.js" type="text/javascript"></script>
+<script>
+$(function()
+{
+    hc_scrollify('panel');
+});
+</script>
+</html>

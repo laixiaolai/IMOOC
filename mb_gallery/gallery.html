@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Gallery</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="">
+<meta name="keywords" content="">
+<script src="zepto.js"></script>
+<link href="animate.css" rel="stylesheet" type="text/css">
+<style>
+	*{margin: 0;padding: 0;border: 0;}
+	ol,ul{list-style: none;}
+	body{background-color:#000;}
+	li{width: 100px;height: 100px;float: left;overflow:hidden;}
+	.large{width: 100%;height:100%;background: #000;position: absolute;top: 0;left: 0;}
+</style>
+</head>
+<body>
+    <ul class="img-container" id="container">
+    </ul>
+    <div class="large animated fadeIn" id="large_container" style="display:none;">
+    	<img id="large_img">
+    </div>
+
+    <script>
+    var total=17;
+    var zWin=$(window);
+    var wImage=$('#large_img');
+    var domImage=wImage[0];
+    var cid;
+    /**
+     *渲染html结构
+     */
+    var render=function(){
+	    var padding=1;
+	    var winWidth=zWin.width();
+
+        //返回小于等于数字参数的最大整数，对数字进行下舍入
+	    var picWidth=Math.floor((winWidth-padding*3)/4);
+       
+	    var tmpl=''; //为每次for循环缓存html代码
+	    for(var i=1;i<=total;i++){
+	    	var p=padding;
+	    	var imgSrc='img/'+i+'.jpg';
+	    	if(i%4==1){
+	    		p=0;
+	    	}
+            //自定义data-id属性
+	    	tmpl+='<li data-id='+i+' class="animated bounceIn" style="width:'+picWidth+'px;height:'+picWidth+'px;padding-left:'+p+'px;padding-top:'+padding+'px"><canvas id="cvs_'+i+'" style="width:'+picWidth+'px;height:'+picWidth+'px;"></canvas></li>';
+	    	var imageObj=new Image();
+	    	imageObj.index=i;
+	    	imageObj.onload=function(){
+                // 方法返回一个用于在画布上绘图的环境,指定二维绘图
+	    		var cvs=$('#cvs_'+this.index)[0].getContext('2d');
+	    		cvs.width=this.width;
+	    		cvs.height=this.height;
+	    		cvs.drawImage(this,0,0);//不偏移
+
+	    	}
+	    	imageObj.src=imgSrc;//请求图片
+	    }
+	    $('#container').html(tmpl);
+    }
+    render();
+
+    /**
+     *加载大图
+     */
+    var loadImg=function(id,callback){
+    	$('#large_container').css({
+    		width:zWin.width(),
+    		height:zWin.height()
+    	}).show();
+    	var imgsrc='img/'+id+'.jpg';
+    	var imgObj=new Image();
+    	imgObj.onload=function(){
+    		var w=this.width;//图片本身实际宽度
+    		var h=this.height;
+            var winWidth=zWin.width();//屏幕宽度
+            var winHeight=zWin.height();
+    		var realw=winHeight*w/h;//缩放实际图片宽度
+            var realh=winWidth*h/w;
+            var paddingLeft=parseInt((winWidth-realw)/2);
+            var paddingTop=parseInt((winHeight-realh)/2);
+    		wImage.css('width','auto').css('height','auto');
+    		wImage.css('padding-left','0px').css('padding-top','0px');
+            //当图片高宽比大于屏幕高宽比时，高度充满屏幕
+    		if(h/w>winHeight/winWidth){
+                wImage.attr('src',imgsrc).css('height',winHeight).css('padding-left',paddingLeft);
+    		}
+    		else{
+                wImage.attr('src',imgsrc).css('width',winWidth).css('padding-top',paddingTop);
+    		}
+    		callback&&callback();//兼容性处理
+    	}
+    	imgObj.src=imgsrc;
+    }
+
+    
+    /**
+     *引用事件委托delegate，不去遍历每个img节省开销
+     */
+    $('#container').delegate('li','tap',function(){
+    	var _id=cid=$(this).attr('data-id');
+    	loadImg(_id);
+    });
+
+    /**
+     *图片翻页
+     */
+    $('#large_container').tap(function(){
+    	$(this).hide();
+    }).swipeLeft(function(){
+    	cid++;
+    	if(cid>total){
+    		cid=total;
+    	}
+    	else{
+    		loadImg(cid,function(){//回调函数
+    			domImage.addEventListener('webkitAnimationEnd',function(){
+    				wImage.removeClass('animated bounceInRight');
+    				domImage.removeEventListener('webkitAnimationEnd');
+    			},false);//false阻止冒泡
+    			wImage.addClass('animated bounceInRight');
+    		});
+    	}
+    }).swipeRight(function(){
+    	cid--;
+    	if(cid<1){
+    		cid=1;
+    	}
+    	else{
+    		loadImg(cid,function(){
+                //自定义addEventListener,防止bounceInRight事件在执行一次后失去
+    			domImage.addEventListener('webkitAnimationEnd',function(){
+    				wImage.removeClass('animated bounceInLeft');
+    				domImage.removeEventListener('webkitAnimationEnd');
+    			},false);
+    			wImage.addClass('animated bounceInLeft');
+    		});
+    	}
+    });
+
+
+
+
+    </script>
+</body>
+</html>
